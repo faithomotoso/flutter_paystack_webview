@@ -23,7 +23,7 @@ PaystackWebView(
           setEmbedded: true,
           secretKey: "your_secret_key",
           customerEmail: "customer@email.com",
-          amountInNaira: "100",
+          amountInNaira: 100,
           callbackURL: "https://www.paystack.com",
           onTransactionInitialized: (PaystackInitialize paystackInitialize) {
             print(paystackInitialize.toString());
