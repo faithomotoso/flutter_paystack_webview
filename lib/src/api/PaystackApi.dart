@@ -71,6 +71,12 @@ class PaystackApi {
     assert(
         transactionReference != null, "Transaction reference must not be null");
 
-    return _dio.get("/transaction/verify/$transactionReference");
+    try {
+      Response response = await _dio.get("/transaction/verify/$transactionReference");
+      return response;
+    } on DioError catch (e) {
+      debugPrint("$_packageName: Error verifying ${e.error}");
+      throw e;
+    }
   }
 }

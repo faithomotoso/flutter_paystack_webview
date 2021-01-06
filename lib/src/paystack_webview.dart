@@ -132,7 +132,8 @@ class _PaystackWebViewState extends State<PaystackWebView> {
                       child: ValueListenableBuilder(
                         valueListenable: showWebView,
                         builder: (context, showWebView, child) {
-                          if (!showWebView) return _defaultVerifyingIndicator();
+                          // if (!showWebView) return _defaultVerifyingIndicator();
+                          if (!showWebView) return verifyingWidget();
 
                           return WebView(
                             initialUrl: paystackInitialize?.authUrl ?? "",
@@ -229,6 +230,19 @@ class _PaystackWebViewState extends State<PaystackWebView> {
 
   Widget _defaultVerifyingIndicator() {
     return _colLoadingIndicator("Verifying Transaction");
+  }
+
+  Widget verifyingWidget() {
+    return PackageFutureBuilder(
+        future: verifyingFuture,
+        onRefresh: () async {
+          setState(() {
+            verifyTransaction();
+          });
+        },
+        loadingWidget: _defaultVerifyingIndicator(),
+        child: Container()
+    );
   }
 }
 

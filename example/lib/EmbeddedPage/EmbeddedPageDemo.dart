@@ -79,7 +79,8 @@ class _CustomPaymentPageState extends State<CustomPaymentPage> {
             child: PaystackWebView(
                 usingEmbedded: true,
                 // your secret key here
-                secretKey: "your_secret_key",
+                // secretKey: "your_secret_key",
+                secretKey: "sk_test_18f150552de869ce7f9030d5621242af78ef41d2",
                 customerEmail: widget.email,
                 amountInNaira: double.parse(widget.amountInNaira),
                 callbackURL: "https://www.google.com",
