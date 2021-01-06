@@ -10,7 +10,6 @@ To use this package, add in `pubspec.yaml`
 ```yaml
 flutter_paystack_webview:
     git: https://github.com/faithomotoso/flutter_paystack_webview.git
-    ref: main
 ```
 
 ## Usage
