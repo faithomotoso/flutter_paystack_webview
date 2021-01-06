@@ -1,7 +1,3 @@
 library flutter_paystack_webview;
-
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'src/paystack_webview.dart';
+export 'src/models/PaystackInitialize.dart'; // hide .fromJson

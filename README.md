@@ -1,14 +1,58 @@
 # flutter_paystack_webview
+A Flutter plugin for payments with Paystack using a WebView.
 
-A new Flutter package project.
+=========================================
+### Note: This package is experimental
+=========================================
 
-## Getting Started
+## Installation
+To use this package, add in `pubspec.yaml`
+```yaml
+flutter_paystack_webview:
+    git: https://github.com/faithomotoso/flutter_paystack_webview.git
+    ref: main
+```
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+## Usage
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+You can use this plugin either as a *full page* or *embedded* with your own page
+
+#### As embedded
+```dart
+...
+PaystackWebView(
+    // if embedded set usingEmbedded to true
+          setEmbedded: true,
+          secretKey: "your_secret_key",
+          customerEmail: "customer@email.com",
+          amountInNaira: "100",
+          callbackURL: "https://www.paystack.com",
+          onTransactionInitialized: (PaystackInitialize paystackInitialize) {
+            print(paystackInitialize.toString());
+          },
+          onTransactionVerified: (verifiedMap) async {
+            print("Transaction verified: $verifiedMap");
+          },)
+...
+```
+
+#### As full page
+```dart
+Navigator.push(context, builder: (_) => PaystackWebView(
+                            // if embedded set usingEmbedded to true
+                                    setEmbedded: true,
+                                    secretKey: "your_secret_key",
+                                    customerEmail: "customer@email.com",
+                                    amountInNaira: "100",
+                                    callbackURL: "https://www.paystack.com",
+                                    onTransactionInitialized: (PaystackInitialize paystackInitialize) {
+                                    print(paystackInitialize.toString());
+                                    },
+                                    onTransactionVerified: (verifiedMap) async {
+                                    print("Transaction verified: $verifiedMap");
+                                    },));
+```
+
+
+### Please report bugs and suggest features
+
