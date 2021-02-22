@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 String _packageName = "flutter_paystack_webview";
@@ -57,7 +58,7 @@ class PaystackApi {
             .toString()
             .toLowerCase()
             .contains("key")) {
-          print("$_packageName: Please check your Paystack secret key");
+         print("$_packageName: Please check your Paystack secret key");
         }
       }
       throw e;
@@ -75,7 +76,7 @@ class PaystackApi {
       Response response = await _dio.get("/transaction/verify/$transactionReference");
       return response;
     } on DioError catch (e) {
-      debugPrint("$_packageName: Error verifying ${e.error}");
+      print("$_packageName: Error verifying ${e.error}");
       throw e;
     }
   }

@@ -39,7 +39,7 @@ class PaystackWebView extends StatefulWidget {
   final OnTransactionVerified onTransactionVerified;
 
   /// Callback URL appended to the initialization request body.
-  /// Must start with https:// or https://
+  /// Must start with https:// or http://
   ///
   ///
   /// This URL is used to detect when a transaction has been completed
@@ -47,19 +47,22 @@ class PaystackWebView extends StatefulWidget {
   /// This URL would not be loaded or displayed.
   final String callbackURL;
 
-  /// Set to true when embedding this Widget in a custom Widget
+  /// Set to true when embedding this Widget as a child of another widget
   /// e.g
   /// ``` dart
   /// Column(
   ///   children:[
-  ///  Text("Some text by you"),
+  ///  Text(""),
+  ///  .
+  ///  .
+  ///  .
   ///  Expanded(
   ///  child: PaystackWebView(...)
   ///     )
   ///    ]
   ///   )
   /// ```
-  /// This remove the back button and prevents popping the widget
+  /// This removes the back button and prevents popping the widget when the transaction is complete
   /// Check example folder...
   final bool usingEmbedded;
 
@@ -92,6 +95,7 @@ class _PaystackWebViewState extends State<PaystackWebView> {
   // When true, shows the webview
   // When false, shows the verifyingTransactionIndicator
   ValueNotifier<bool> showWebView = ValueNotifier<bool>(false);
+  ValueNotifier<bool> showVerification = ValueNotifier<bool>(false);
   WebViewController webViewController;
 
   PaystackInitialize paystackInitialize;
@@ -171,6 +175,7 @@ class _PaystackWebViewState extends State<PaystackWebView> {
 
   Future verifyTransaction() async {
     showWebView.value = false;
+    showVerification.value = true;
     verifyingFuture = PaystackApi.verifyTransaction(
             transactionReference: paystackInitialize?.reference)
         .then((value) {
@@ -192,6 +197,8 @@ class _PaystackWebViewState extends State<PaystackWebView> {
 
   Future<NavigationDecision> navigationDelegate(
       NavigationRequest request) async {
+    // todo remove print
+    print("Navigation request: $request, ${request.url}");
     if (request.url.contains("tel")) {
       // Handling event when a user taps on a USSD code
       if (await canLaunch(request.url)) launch(request.url);

@@ -25,7 +25,8 @@ class _PackageFutureBuilderState extends State<PackageFutureBuilder> {
     return FutureBuilder(
       future: widget.future,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) return widget.loadingWidget;
+        if (snapshot.connectionState == ConnectionState.waiting)
+          return widget.loadingWidget;
 
         if (snapshot.hasError) {
           return _errorWidget();
