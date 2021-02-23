@@ -179,7 +179,8 @@ class _PaystackWebViewState extends State<PaystackWebView> {
     verifyingFuture = PaystackApi.verifyTransaction(
             transactionReference: paystackInitialize?.reference)
         .then((value) {
-      // Close webview
+          showVerification.value = false;
+      // Close web-view
       // Only close the WebView when the widget is being used as a full screen
       // (by Navigation)
       if (!widget.usingEmbedded)
@@ -198,7 +199,7 @@ class _PaystackWebViewState extends State<PaystackWebView> {
   Future<NavigationDecision> navigationDelegate(
       NavigationRequest request) async {
     // todo remove print
-    print("Navigation request: $request, ${request.url}");
+    // print("Navigation request: $request, ${request.url}");
     if (request.url.contains("tel")) {
       // Handling event when a user taps on a USSD code
       if (await canLaunch(request.url)) launch(request.url);
@@ -240,15 +241,22 @@ class _PaystackWebViewState extends State<PaystackWebView> {
   }
 
   Widget verifyingWidget() {
-    return PackageFutureBuilder(
-        future: verifyingFuture,
-        onRefresh: () async {
-          setState(() {
-            verifyTransaction();
-          });
-        },
-        loadingWidget: _defaultVerifyingIndicator(),
-        child: Container()
+    return ValueListenableBuilder(
+      valueListenable: showVerification,
+      builder: (context, showVerification, child) {
+        if (!showVerification) return SizedBox();
+
+        return PackageFutureBuilder(
+            future: verifyingFuture,
+            onRefresh: () async {
+              setState(() {
+                verifyTransaction();
+              });
+            },
+            loadingWidget: _defaultVerifyingIndicator(),
+            child: Container()
+        );
+      },
     );
   }
 }
