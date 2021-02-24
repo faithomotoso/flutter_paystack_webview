@@ -190,7 +190,8 @@ class _PaystackWebViewState extends State<PaystackWebView> {
           showBlank = true;
         });
 
-      widget.onTransactionVerified?.call(value.data["data"]);
+      Map<String, dynamic> data = value.data["data"];
+      widget.onTransactionVerified?.call(data, data["status"], data["reference"]);
 
       return value;
     });
@@ -263,4 +264,4 @@ class _PaystackWebViewState extends State<PaystackWebView> {
 
 typedef OnTransactionInitialize(PaystackInitialize paystackInitialize);
 
-typedef OnTransactionVerified(Map verificationMap);
+typedef OnTransactionVerified(Map verificationMap, String status, String reference);
