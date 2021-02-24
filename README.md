@@ -20,7 +20,7 @@ You can use this plugin either as a *full page* or *embedded* with your own page
 ```dart
 ...
 PaystackWebView(
-          setEmbedded: true,
+          usingEmbedded: true,
           secretKey: "your_secret_key",
           customerEmail: "customer@email.com",
           amountInNaira: 100,
