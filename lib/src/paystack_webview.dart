@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_paystack_webview/src/components/error_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/platform_interface.dart';
 import 'api/PaystackApi.dart';
 import 'components/pkg_future_builder.dart';
 import 'models/PaystackInitialize.dart';
@@ -92,10 +94,11 @@ class _PaystackWebViewState extends State<PaystackWebView> {
   Future initializingFuture;
   Future verifyingFuture;
 
-  // When true, shows the webview
+  // When true, shows the webView
   // When false, shows the verifyingTransactionIndicator
   ValueNotifier<bool> showWebView = ValueNotifier<bool>(false);
   ValueNotifier<bool> showVerification = ValueNotifier<bool>(false);
+  ValueNotifier<bool> webViewError = ValueNotifier<bool>(false);
   WebViewController webViewController;
 
   PaystackInitialize paystackInitialize;
@@ -111,6 +114,15 @@ class _PaystackWebViewState extends State<PaystackWebView> {
         callbackUrl: widget.callbackURL, secretKey: widget.secretKey);
     initializeTransaction();
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
+  }
+
+  @override
+  void dispose() {
+    showWebView.dispose();
+    showVerification.dispose();
+    webViewError.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -139,14 +151,28 @@ class _PaystackWebViewState extends State<PaystackWebView> {
                           // if (!showWebView) return _defaultVerifyingIndicator();
                           if (!showWebView) return verifyingWidget();
 
-                          return WebView(
-                            initialUrl: paystackInitialize?.authUrl ?? "",
-                            onWebViewCreated: (controller) {
-                              webViewController = controller;
-                            },
-                            javascriptMode: JavascriptMode.unrestricted,
-                            navigationDelegate: navigationDelegate,
-                          );
+                          return ValueListenableBuilder(
+                              valueListenable: webViewError,
+                              builder: (context, webViewHasError, child) {
+                                if (webViewHasError)
+                                  return PkgErrorWidget(
+                                      errorMessage:
+                                          "An error occurred while loading. Tap to reload.",
+                                      onRefresh: () {
+                                        webViewError.value = false;
+                                        // webViewController.reload();
+                                      });
+
+                                return WebView(
+                                  initialUrl: paystackInitialize?.authUrl ?? "",
+                                  onWebViewCreated: (controller) {
+                                    webViewController = controller;
+                                  },
+                                  javascriptMode: JavascriptMode.unrestricted,
+                                  navigationDelegate: navigationDelegate,
+                                  onWebResourceError: handleWebResourceError,
+                                );
+                              });
                         },
                       ),
                     ),
@@ -179,7 +205,7 @@ class _PaystackWebViewState extends State<PaystackWebView> {
     verifyingFuture = PaystackApi.verifyTransaction(
             transactionReference: paystackInitialize?.reference)
         .then((value) {
-          showVerification.value = false;
+      showVerification.value = false;
       // Close web-view
       // Only close the WebView when the widget is being used as a full screen
       // (by Navigation)
@@ -191,7 +217,8 @@ class _PaystackWebViewState extends State<PaystackWebView> {
         });
 
       Map<String, dynamic> data = value.data["data"];
-      widget.onTransactionVerified?.call(data, data["status"], data["reference"]);
+      widget.onTransactionVerified
+          ?.call(data, data["status"], data["reference"]);
 
       return value;
     });
@@ -255,13 +282,35 @@ class _PaystackWebViewState extends State<PaystackWebView> {
               });
             },
             loadingWidget: _defaultVerifyingIndicator(),
-            child: Container()
-        );
+            child: Container());
       },
     );
+  }
+
+  void handleWebResourceError(WebResourceError webResourceError) {
+    String errorDescription = webResourceError.description;
+    if (WebViewError.hasWebviewError(errorDescription)) {
+      // Display an error widget to reload the current url
+      webViewError.value = true;
+    }
   }
 }
 
 typedef OnTransactionInitialize(PaystackInitialize paystackInitialize);
 
-typedef OnTransactionVerified(Map verificationMap, String status, String reference);
+typedef OnTransactionVerified(
+    Map verificationMap, String status, String reference);
+
+class WebViewError {
+  static const String NAME_NOT_RESOLVED = "ERR_NAME_NOT_RESOLVED";
+  static const String ADDRESS_UNREACHABLE = "ERR_ADDRESS_UNREACHABLE";
+  static const String CONNECTION_ABORTED = "ERR_CONNECTION_ABORTED";
+
+  // Check if the error from web view matches any of the listed ones
+  // When true, trigger an error widget to display to the user to reload.
+  static bool hasWebviewError(String errorDescription) {
+    return errorDescription.contains(NAME_NOT_RESOLVED) ||
+        errorDescription.contains(ADDRESS_UNREACHABLE) ||
+        errorDescription.contains(CONNECTION_ABORTED);
+  }
+}

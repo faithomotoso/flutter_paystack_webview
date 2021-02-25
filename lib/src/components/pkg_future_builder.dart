@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_paystack_webview/src/components/error_widget.dart';
 
 class PackageFutureBuilder extends StatefulWidget {
   final Future future;
@@ -29,7 +30,10 @@ class _PackageFutureBuilderState extends State<PackageFutureBuilder> {
           return widget.loadingWidget;
 
         if (snapshot.hasError) {
-          return _errorWidget();
+          return PkgErrorWidget(
+            errorMessage: "An error occurred. Tap to reload",
+            onRefresh: widget.onRefresh?.call,
+          );
         }
 
         return widget.child;
