@@ -25,13 +25,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
-  plugin:
-    platforms:
-      android:
-        package: com.example.example
-        pluginClass: flutter_paystack_webview
-      ios:
-        pluginClass: flutter_paystack_webview
 
   # To add assets to your package, add an assets section, like this:
   # assets:
