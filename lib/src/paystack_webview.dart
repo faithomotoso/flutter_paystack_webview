@@ -234,6 +234,9 @@ class _PaystackWebViewState extends State<PaystackWebView> {
     } else if (request.url.contains(PaystackApi.callbackUrl)) {
       // Transaction complete, verifyTransaction
       verifyTransaction();
+    } else if (request.url.contains("checkout")) {
+      // Fixes blank screen on iOS
+      return NavigationDecision.navigate;
     }
 
     return NavigationDecision.prevent;
