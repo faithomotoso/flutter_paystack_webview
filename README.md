@@ -28,7 +28,7 @@ PaystackWebView(
           onTransactionInitialized: (PaystackInitialize paystackInitialize) {
             print(paystackInitialize.toString());
           },
-          onTransactionVerified: (verifiedMap) async {
+          onTransactionVerified: (verifiedMap, status, reference) async {
             print("Transaction verified: $verifiedMap");
           },)
 ...
@@ -44,7 +44,7 @@ Navigator.push(context, builder: (_) => PaystackWebView(
                                     onTransactionInitialized: (PaystackInitialize paystackInitialize) {
                                     print(paystackInitialize.toString());
                                     },
-                                    onTransactionVerified: (verifiedMap) async {
+                                    onTransactionVerified: (verifiedMap, status, reference) async {
                                     print("Transaction verified: $verifiedMap");
                                     },));
 ```
