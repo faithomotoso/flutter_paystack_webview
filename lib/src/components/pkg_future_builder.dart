@@ -40,24 +40,4 @@ class _PackageFutureBuilderState extends State<PackageFutureBuilder> {
       },
     );
   }
-
-  Widget _errorWidget() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            onPressed: () {
-              widget.onRefresh.call();
-            },
-            icon: Icon(Icons.refresh),
-          ),
-          SizedBox(
-            height: 4,
-          ),
-          Text("An error occurred. Tap to reload.")
-        ],
-      ),
-    );
-  }
 }

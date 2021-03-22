@@ -70,8 +70,6 @@ class PaystackApi {
   static Future verifyTransaction(
       {required String transactionReference}) async {
     _assertSecretKey();
-    assert(
-        transactionReference != null, "Transaction reference must not be null");
 
     try {
       Response response = await _dio.get("/transaction/verify/$transactionReference");
