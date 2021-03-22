@@ -7,7 +7,7 @@ class PaystackApi {
   static final Dio _dio = Dio(BaseOptions(baseUrl: "https://api.paystack.co"));
 
   /// Stores the [callbackUrl]
-  static String _callbackUrl;
+  static late String _callbackUrl;
 
   /// Default [callbackUrl] if null
   static String _defaultCallbackUrl = "https://www.paystack.com";
@@ -16,11 +16,12 @@ class PaystackApi {
   ///
   /// Used for [NavigationDelegate] in [WebView]
   static String get callbackUrl {
-    return _callbackUrl ?? _defaultCallbackUrl;
+    // return _callbackUrl ?? _defaultCallbackUrl;
+    return _callbackUrl;
   }
 
   /// Initialize [PaystackApi] with a callbackURL and [secretKey]
-  static init({@required String callbackUrl, @required String secretKey}) {
+  static init({required String callbackUrl, required String secretKey}) {
     _appendSecretKey(secretKey);
     PaystackApi._callbackUrl = callbackUrl;
   }
@@ -40,7 +41,7 @@ class PaystackApi {
   /// Makes an api call with the customers email and amount
   /// Gets the [PaystackInitialize.authUrl] to be used in a [WebView]
   static Future initializeTransaction(
-      {@required String customerEmail, @required double amount}) async {
+      {required String customerEmail, required double amount}) async {
     _assertSecretKey();
 
     // using raw dio.post for error to be handled in the future builder
@@ -67,7 +68,7 @@ class PaystackApi {
 
   /// Verifies a transaction
   static Future verifyTransaction(
-      {@required String transactionReference}) async {
+      {required String transactionReference}) async {
     _assertSecretKey();
     assert(
         transactionReference != null, "Transaction reference must not be null");

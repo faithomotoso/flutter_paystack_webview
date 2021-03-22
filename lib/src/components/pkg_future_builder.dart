@@ -6,13 +6,13 @@ class PackageFutureBuilder extends StatefulWidget {
   final Future future;
   final VoidCallback onRefresh;
   final Widget child;
-  final Function onData;
-  final Widget loadingWidget;
+  final Function? onData;
+  final Widget? loadingWidget;
 
   PackageFutureBuilder(
-      {@required this.future,
-      @required this.onRefresh,
-      @required this.child,
+      {required this.future,
+      required this.onRefresh,
+      required this.child,
       this.onData,
       this.loadingWidget});
 
@@ -27,12 +27,12 @@ class _PackageFutureBuilderState extends State<PackageFutureBuilder> {
       future: widget.future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting)
-          return widget.loadingWidget;
+          return widget.loadingWidget!;
 
         if (snapshot.hasError) {
           return PkgErrorWidget(
             errorMessage: "An error occurred. Tap to reload",
-            onRefresh: widget.onRefresh?.call,
+            onRefresh: widget.onRefresh.call,
           );
         }
 
@@ -48,7 +48,7 @@ class _PackageFutureBuilderState extends State<PackageFutureBuilder> {
         children: [
           IconButton(
             onPressed: () {
-              widget.onRefresh?.call();
+              widget.onRefresh.call();
             },
             icon: Icon(Icons.refresh),
           ),

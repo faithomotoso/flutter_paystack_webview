@@ -4,7 +4,7 @@ class PkgErrorWidget extends StatelessWidget {
   final String errorMessage;
   final VoidCallback onRefresh;
 
-  PkgErrorWidget({@required this.errorMessage, @required this.onRefresh});
+  PkgErrorWidget({required this.errorMessage, required this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class PkgErrorWidget extends StatelessWidget {
             height: 5,
           ),
           IconButton(
-              icon: Icon(Icons.refresh_outlined), onPressed: onRefresh?.call)
+              icon: Icon(Icons.refresh_outlined), onPressed: onRefresh.call)
         ],
       ),
     );

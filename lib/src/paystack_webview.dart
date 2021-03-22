@@ -29,7 +29,7 @@ class PaystackWebView extends StatefulWidget {
   ///
   /// Returns a [PaystackInitialize] object.
   /// https://paystack.com/docs/api/#transaction-initialize
-  final OnTransactionInitialize onTransactionInitialized;
+  final OnTransactionInitialize? onTransactionInitialized;
 
   /// Callback after a transaction has been verified.
   ///
@@ -69,20 +69,14 @@ class PaystackWebView extends StatefulWidget {
   final bool usingEmbedded;
 
   PaystackWebView(
-      {@required this.secretKey,
-      @required this.customerEmail,
-      @required this.amountInNaira,
-      @required this.onTransactionVerified,
-      @required this.callbackURL,
+      {required this.secretKey,
+      required this.customerEmail,
+      required this.amountInNaira,
+      required this.onTransactionVerified,
+      required this.callbackURL,
       this.usingEmbedded = false,
       this.onTransactionInitialized})
-      : assert(secretKey != null, "Paystack secret key must not be null"),
-        assert(customerEmail != null, "Customer email must not be null"),
-        assert(amountInNaira != null, "Amount must not be null"),
-        assert(amountInNaira > 0, "Amount can not be negative"),
-        assert(onTransactionVerified != null,
-            "onTransactionVerified must not be null"),
-        assert(
+      : assert(
             callbackURL.contains("https://") || callbackURL.contains("http://"),
             "Callback URL must begin with 'https:// or http://");
 
@@ -91,17 +85,17 @@ class PaystackWebView extends StatefulWidget {
 }
 
 class _PaystackWebViewState extends State<PaystackWebView> {
-  Future initializingFuture;
-  Future verifyingFuture;
+  late Future initializingFuture;
+  late Future verifyingFuture;
 
   // When true, shows the webView
   // When false, shows the verifyingTransactionIndicator
   ValueNotifier<bool> showWebView = ValueNotifier<bool>(false);
   ValueNotifier<bool> showVerification = ValueNotifier<bool>(false);
   ValueNotifier<bool> webViewError = ValueNotifier<bool>(false);
-  WebViewController webViewController;
+  late WebViewController webViewController;
 
-  PaystackInitialize paystackInitialize;
+  late PaystackInitialize paystackInitialize;
 
   // Set to true when widget.usingEmbedded is true and transaction
   // has been verified
@@ -145,13 +139,13 @@ class _PaystackWebViewState extends State<PaystackWebView> {
                         });
                       },
                       loadingWidget: _defaultInitializingIndicator(),
-                      child: ValueListenableBuilder(
+                      child: ValueListenableBuilder<bool>(
                         valueListenable: showWebView,
                         builder: (context, showWebView, child) {
                           // if (!showWebView) return _defaultVerifyingIndicator();
                           if (!showWebView) return verifyingWidget();
 
-                          return ValueListenableBuilder(
+                          return ValueListenableBuilder<bool>(
                               valueListenable: webViewError,
                               builder: (context, webViewHasError, child) {
                                 if (webViewHasError)
@@ -164,7 +158,7 @@ class _PaystackWebViewState extends State<PaystackWebView> {
                                       });
 
                                 return WebView(
-                                  initialUrl: paystackInitialize?.authUrl ?? "",
+                                  initialUrl: paystackInitialize.authUrl,
                                   onWebViewCreated: (controller) {
                                     webViewController = controller;
                                   },
@@ -203,7 +197,7 @@ class _PaystackWebViewState extends State<PaystackWebView> {
     showWebView.value = false;
     showVerification.value = true;
     verifyingFuture = PaystackApi.verifyTransaction(
-            transactionReference: paystackInitialize?.reference)
+            transactionReference: paystackInitialize.reference)
         .then((value) {
       showVerification.value = false;
       // Close web-view
@@ -218,7 +212,7 @@ class _PaystackWebViewState extends State<PaystackWebView> {
 
       Map<String, dynamic> data = value.data["data"];
       widget.onTransactionVerified
-          ?.call(data, data["status"], data["reference"]);
+          .call(data, data["status"], data["reference"]);
 
       return value;
     });
@@ -226,8 +220,6 @@ class _PaystackWebViewState extends State<PaystackWebView> {
 
   Future<NavigationDecision> navigationDelegate(
       NavigationRequest request) async {
-    // todo remove print
-    // print("Navigation request: $request, ${request.url}");
     if (request.url.contains("tel")) {
       // Handling event when a user taps on a USSD code
       if (await canLaunch(request.url)) launch(request.url);
@@ -272,7 +264,7 @@ class _PaystackWebViewState extends State<PaystackWebView> {
   }
 
   Widget verifyingWidget() {
-    return ValueListenableBuilder(
+    return ValueListenableBuilder<bool>(
       valueListenable: showVerification,
       builder: (context, showVerification, child) {
         if (!showVerification) return SizedBox();

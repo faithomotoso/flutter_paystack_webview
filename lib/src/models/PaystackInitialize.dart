@@ -9,7 +9,10 @@ class PaystackInitialize {
   //   this.reference = json["reference"];
   // }
 
-  PaystackInitialize({this.authUrl, this.accessCode, this.reference});
+  PaystackInitialize(
+      {required this.authUrl,
+      required this.accessCode,
+      required this.reference});
 
   @override
   String toString() {
