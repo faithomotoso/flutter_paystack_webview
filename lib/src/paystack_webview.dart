@@ -25,6 +25,10 @@ class PaystackWebView extends StatefulWidget {
   /// Would be converted to Kobo automatically.
   final double amountInNaira;
 
+  /// Extra data to pass to the initialize api
+  /// https://paystack.com/docs/api/#transaction
+  final Map<String, dynamic> extraInitData;
+
   /// Callback after a transaction has been initialized.
   ///
   /// Returns a [PaystackInitialize] object.
@@ -74,6 +78,7 @@ class PaystackWebView extends StatefulWidget {
       @required this.amountInNaira,
       @required this.onTransactionVerified,
       @required this.callbackURL,
+      this.extraInitData,
       this.usingEmbedded = false,
       this.onTransactionInitialized})
       : assert(secretKey != null, "Paystack secret key must not be null"),
@@ -185,7 +190,9 @@ class _PaystackWebViewState extends State<PaystackWebView> {
 
   Future initializeTransaction() async {
     initializingFuture = PaystackApi.initializeTransaction(
-            customerEmail: widget.customerEmail, amount: widget.amountInNaira)
+            customerEmail: widget.customerEmail,
+            amount: widget.amountInNaira,
+            extraData: widget.extraInitData ?? {})
         .then((value) {
       // paystackInitialize = PaystackInitialize.fromJson(value.data["data"]);
       Map<String, dynamic> data = value.data["data"];
@@ -226,7 +233,6 @@ class _PaystackWebViewState extends State<PaystackWebView> {
 
   Future<NavigationDecision> navigationDelegate(
       NavigationRequest request) async {
-    // todo remove print
     // print("Navigation request: $request, ${request.url}");
     if (request.url.contains("tel")) {
       // Handling event when a user taps on a USSD code

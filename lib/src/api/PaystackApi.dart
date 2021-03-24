@@ -40,7 +40,7 @@ class PaystackApi {
   /// Makes an api call with the customers email and amount
   /// Gets the [PaystackInitialize.authUrl] to be used in a [WebView]
   static Future initializeTransaction(
-      {@required String customerEmail, @required double amount}) async {
+      {@required String customerEmail, @required double amount, Map<String, dynamic> extraData}) async {
     _assertSecretKey();
 
     // using raw dio.post for error to be handled in the future builder
@@ -48,7 +48,8 @@ class PaystackApi {
       Response response = await _dio.post("/transaction/initialize", data: {
         "email": customerEmail,
         "amount": (amount * 100).toString(),
-        "callback_url": callbackUrl
+        "callback_url": callbackUrl,
+        ...extraData
       });
       return response;
     } on DioError catch (e) {
