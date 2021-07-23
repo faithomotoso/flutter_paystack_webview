@@ -9,6 +9,8 @@ import 'components/pkg_future_builder.dart';
 import 'models/PaystackInitialize.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import 'models/WebviewError.dart';
+
 /// This widget initializes a Paystack transaction using the
 /// [customerEmail] and [amountInNaira] in Naira
 /// The [authUrl] gotten from initialization is loaded in a [WebView].
@@ -310,16 +312,3 @@ typedef OnTransactionInitialize(PaystackInitialize paystackInitialize);
 typedef OnTransactionVerified(
     Map verificationMap, String status, String reference);
 
-class WebViewError {
-  static const String NAME_NOT_RESOLVED = "ERR_NAME_NOT_RESOLVED";
-  static const String ADDRESS_UNREACHABLE = "ERR_ADDRESS_UNREACHABLE";
-  static const String CONNECTION_ABORTED = "ERR_CONNECTION_ABORTED";
-
-  // Check if the error from web view matches any of the listed ones
-  // When true, trigger an error widget to display to the user to reload.
-  static bool hasWebviewError(String errorDescription) {
-    return errorDescription.contains(NAME_NOT_RESOLVED) ||
-        errorDescription.contains(ADDRESS_UNREACHABLE) ||
-        errorDescription.contains(CONNECTION_ABORTED);
-  }
-}
