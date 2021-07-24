@@ -16,37 +16,32 @@ flutter_paystack_webview:
 
 You can use this plugin either as a *full page* or *embedded* with your own page
 
+`paymentURL` should be initialized either from your backend or locally on the app using
+https://paystack.com/docs/api/#transaction
+
+`onTransactionCompleted` is called when the transaction has been completed and your `callbackURL` is Navigated to
+Run verification of the transaction here https://paystack.com/docs/api/#transaction-verify
+
 #### As embedded
 ```dart
-...
 PaystackWebView(
           usingEmbedded: true,
-          secretKey: "your_secret_key",
-          customerEmail: "customer@email.com",
-          amountInNaira: 100,
+          paymentUrl: "URL gotten from paystack initialization"
           callbackURL: "https://www.paystack.com",
-          onTransactionInitialized: (PaystackInitialize paystackInitialize) {
-            print(paystackInitialize.toString());
-          },
-          onTransactionVerified: (verifiedMap, status, reference) async {
-            print("Transaction verified: $verifiedMap");
-          },)
-...
+          onTransactionCompleted: () {
+          // Verify transaction here
+})
 ```
 
 #### As full page
+Note: When the transaction is completed, the webview closes itself using `Navigator.pop(context)` before calling `onTransactionCompleted`
 ```dart
 Navigator.push(context, builder: (_) => PaystackWebView(
-                                    secretKey: "your_secret_key",
-                                    customerEmail: "customer@email.com",
-                                    amountInNaira: 100,
+                                    paymentUrl: "URL gotten from paystack initialization"
                                     callbackURL: "https://www.paystack.com",
-                                    onTransactionInitialized: (PaystackInitialize paystackInitialize) {
-                                    print(paystackInitialize.toString());
-                                    },
-                                    onTransactionVerified: (verifiedMap, status, reference) async {
-                                    print("Transaction verified: $verifiedMap");
-                                    },));
+                                    onTransactionCompleted: () {
+                                  // Verify transaction here
+                        }));
 ```
 
 
