@@ -4,15 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_paystack_webview/src/components/error_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/platform_interface.dart';
-import 'api/PaystackApi.dart';
-import 'models/PaystackInitialize.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import 'models/WebviewError.dart';
-
-/// This widget initializes a Paystack transaction using the
-/// [customerEmail] and [amountInNaira] in Naira
-/// The [authUrl] gotten from initialization is loaded in a [WebView].
 
 class PaystackWebView extends StatefulWidget {
   /// URL gotten from paystack after initializing.
@@ -21,21 +15,6 @@ class PaystackWebView extends StatefulWidget {
 
   /// Called when a transaction has been completed and webview closed (fullscreen)
   final VoidCallback onTransactionCompleted;
-
-  /// Callback after a transaction has been initialized.
-  ///
-  /// Returns a [PaystackInitialize] object.
-  /// https://paystack.com/docs/api/#transaction-initialize
-  // final OnTransactionInitialize onTransactionInitialized;
-
-  /// Callback after a transaction has been verified.
-  ///
-  /// WebView closes automatically if [usingEmbedded] is false
-  /// Returns a [Map] object of the response, use this to confirm
-  /// if a transaction was successful or not.
-  /// Check the ["status"] for the status of the transaction
-  /// https://paystack.com/docs/api/#transaction-verify
-  // final OnTransactionVerified onTransactionVerified;
 
   /// Callback URL appended to the initialization request body.
   /// Must start with https:// or http://
@@ -82,8 +61,6 @@ class _PaystackWebViewState extends State<PaystackWebView> {
   final ValueNotifier<bool> webViewError = ValueNotifier<bool>(false);
   final ValueNotifier<bool> loadingWebview = ValueNotifier<bool>(false);
   WebViewController webViewController;
-
-  PaystackInitialize paystackInitialize;
 
   // Set to true when widget.usingEmbedded is true and transaction
   // has been completed
@@ -185,12 +162,6 @@ class _PaystackWebViewState extends State<PaystackWebView> {
     return NavigationDecision.prevent;
   }
 
-  Widget _defaultLoadingIndicator() {
-    return Center(
-      child: CircularProgressIndicator(),
-    );
-  }
-
   Widget _colLoadingIndicator(String message) {
     return Center(
       child: Column(
@@ -200,7 +171,9 @@ class _PaystackWebViewState extends State<PaystackWebView> {
           SizedBox(
             height: 6,
           ),
-          _defaultLoadingIndicator()
+          Center(
+            child: CircularProgressIndicator(),
+          )
         ],
       ),
     );
@@ -214,8 +187,3 @@ class _PaystackWebViewState extends State<PaystackWebView> {
     }
   }
 }
-
-typedef OnTransactionInitialize(PaystackInitialize paystackInitialize);
-
-typedef OnTransactionVerified(
-    Map verificationMap, String status, String reference);
