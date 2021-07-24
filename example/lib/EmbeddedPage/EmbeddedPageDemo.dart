@@ -47,13 +47,7 @@ class _EmbeddedPageDemoState extends State<EmbeddedPageDemo> {
             ),
             ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => CustomPaymentPage(
-                                email: emailController.text,
-                                amountInNaira: amountController.text,
-                              )));
+                  initTransaction();
                 },
                 child: Text("Pay"))
           ],
@@ -61,21 +55,38 @@ class _EmbeddedPageDemoState extends State<EmbeddedPageDemo> {
       ),
     );
   }
+
+  void initTransaction() async {
+    showDialog(context: context, builder: (ctx) => Center(child: CircularProgressIndicator(),));
+    AppDemoApi.initializeTransaction(
+        customerEmail: emailController.text,
+        amount: double.parse(amountController.text))
+        .then((value) {
+      Navigator.pop(context);
+      if (value is String) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => CustomPaymentPage(
+                  amountInNaira: amountController.text,
+                  paymentUrl: value,
+                )));
+      }
+    });
+  }
 }
 
 class CustomPaymentPage extends StatefulWidget {
-  final String email;
+  final String paymentUrl;
   final String amountInNaira;
 
-  CustomPaymentPage({this.email, this.amountInNaira});
+  CustomPaymentPage({@required this.paymentUrl, this.amountInNaira});
 
   @override
   _CustomPaymentPageState createState() => _CustomPaymentPageState();
 }
 
 class _CustomPaymentPageState extends State<CustomPaymentPage> {
-  String paymentUrl;
-  final ValueNotifier<bool> loadingTransaction = ValueNotifier<bool>(false);
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +101,7 @@ class _CustomPaymentPageState extends State<CustomPaymentPage> {
             child: PaystackWebView(
               usingEmbedded: true,
               callbackURL: AppDemoApi.callbackUrl,
-              paymentURL: paymentUrl,
+              paymentURL: widget.paymentUrl,
               onTransactionCompleted: () {
                 showDialog(
                     context: context,
@@ -98,7 +109,7 @@ class _CustomPaymentPageState extends State<CustomPaymentPage> {
                       return Center(
                         child: Container(
                           height: 200,
-                          width: MediaQuery.of(context).size.width * 0.5,
+                          padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8)),
@@ -107,7 +118,7 @@ class _CustomPaymentPageState extends State<CustomPaymentPage> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  "Transaction Done",
+                                  "Transaction completed. Verify here",
                                   style: TextStyle(
                                       inherit: false,
                                       color: Colors.black,
@@ -130,18 +141,4 @@ class _CustomPaymentPageState extends State<CustomPaymentPage> {
     );
   }
 
-  void initTransaction() async {
-    loadingTransaction.value = true;
-    AppDemoApi.initializeTransaction(
-            customerEmail: widget.email,
-            amount: double.parse(widget.amountInNaira))
-        .then((value) {
-      loadingTransaction.value = false;
-      if (value is String) {
-        setState(() {
-          paymentUrl = value;
-        });
-      }
-    });
-  }
 }
