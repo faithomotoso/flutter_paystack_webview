@@ -1,6 +1,6 @@
 name: flutter_paystack_webview
 description: A Flutter plugin for payments with Paystack using a WebView.
-version: 0.1.0
+version: 0.2.0
 author: Faith Omotoso (faithomotoso@gmail.com)
 homepage: https://github.com/faithomotoso/flutter_paystack_webview
 
